@@ -47,16 +47,24 @@ class Welcome extends CI_Controller {
         $this->load->view('olvidemiclave');
         $this->load->view('template2/footer');
     }
+    
+    public function camara(){
+        $this->load->view('templates/header');
+        $this->load->view('camaraenvivo');
+        $this->load->view('templates/footer');
+    }
 
     public function login() {
         $rut = $this->input->post("rut");
         $clave = $this->input->post("clave");
-        $arrayUser = $this->usuario->login($rut, $clave);
+        $arrayUser = $this->usuario->login($rut,md5($clave));
 
         if (count($arrayUser) > 0) {
             if ($arrayUser[0]->tipo == 0) {
+                $this->session->set_userdata("administrador",$arrayUser);
                 echo json_encode(array("msg" => "administrador"));
             } else {
+                $this->session->set_userdata("guardia",$arrayUser);
                 echo json_encode(array("msg" => "guardia"));
             }
         } else {
@@ -65,10 +73,12 @@ class Welcome extends CI_Controller {
     }
 
     
-    
-    public function proceso() {
-        $nombre = $this->input->post("nombre");
-        echo json_encode(array("msg" => "Hola " . $nombre));
+    public function logout(){
+        $this->session->sess_destroy();
+        redirect('index');
     }
+    
+    
+    
 
 }
